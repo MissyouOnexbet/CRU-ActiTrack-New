@@ -1,4 +1,4 @@
-// นำเข้า Firebase SDK จาก Google CDN
+import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
 import { getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -37,25 +37,33 @@ onAuthStateChanged(auth, (user) => {
 });
 
 // ================= ระบบล็อคอิน =================
-window.handleGoogleLogin = async () => {
-  try {
-    await signInWithPopup(auth, provider);
-    // เข้าสู่ระบบสำเร็จ ระบบจะไปทำงานที่ onAuthStateChanged อัตโนมัติ
-  } catch (error) {
-    console.error("Login Error:", error);
-    alert("เกิดข้อผิดพลาดในการล็อคอิน: " + error.message);
+window.handleLogin = async () => {
+  const email = document.getElementById('login-email').value;
+  const pass = document.getElementById('login-pass').value;
+
+  if (!email || !pass) {
+    alert("กรุณากรอกอีเมลและรหัสผ่านให้ครบครับ");
+    return;
   }
-};
 
-window.handleLogin = () => {
-  alert("เพื่อความปลอดภัยและง่ายที่สุด แนะนำให้ใช้ 'เข้าสู่ระบบด้วย Google' ด้านล่างครับ!");
-};
-
-window.logout = async () => {
   try {
-    await signOut(auth);
+    // ลองล็อคอินก่อน
+    await signInWithEmailAndPassword(auth, email, pass);
   } catch (error) {
-    console.error("Logout Error:", error);
+    // ถ้าระบบบอกว่ารหัสผิด หรือไม่มีบัญชีนี้ จะลองถามเพื่อสร้างบัญชีใหม่
+    if (error.code === 'auth/invalid-credential' || error.code === 'auth/user-not-found') {
+      const confirmCreate = confirm("ไม่พบบัญชีนี้ หรือรหัสผ่านผิด คุณต้องการ 'สร้างบัญชีใหม่' ด้วยอีเมลนี้เลยหรือไม่?");
+      if (confirmCreate) {
+        try {
+          await createUserWithEmailAndPassword(auth, email, pass);
+          alert("สร้างบัญชีสำเร็จและเข้าสู่ระบบเรียบร้อย!");
+        } catch (createErr) {
+          alert("สร้างบัญชีไม่สำเร็จ: " + createErr.message);
+        }
+      }
+    } else {
+      alert("เกิดข้อผิดพลาด: " + error.message);
+    }
   }
 };
 
