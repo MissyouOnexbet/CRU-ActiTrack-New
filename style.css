@@ -1,0 +1,91 @@
+:root {
+  --yellow: #FFE000;
+  --yellow-dim: #E6C900;
+  --yellow-glow: rgba(255, 224, 0, 0.18);
+  --black: #0A0A0A;
+  --surface: #141414;
+  --surface2: #1E1E1E;
+  --border: rgba(255, 224, 0, 0.15);
+  --text: #F5F5F5;
+  --muted: #888;
+  --radius: 18px;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+
+body {
+  background: var(--black);
+  color: var(--text);
+  font-family: var(--font-body);
+  display: flex;
+  justify-content: center;
+}
+
+.app-shell {
+  width: 100%;
+  max-width: 420px;
+  min-height: 100vh;
+  background: var(--black);
+}
+
+.tab-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10,10,10,0.92);
+  backdrop-filter: blur(14px);
+  display: flex;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 16px 0;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.tab-btn.active {
+  color: var(--yellow);
+  border-bottom: 2px solid var(--yellow);
+}
+
+.summary-card {
+  background: var(--yellow);
+  border-radius: var(--radius);
+  padding: 30px;
+  color: var(--black);
+}
+
+.activity-item {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+input {
+  width: 100%;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  padding: 15px;
+  color: white;
+  border-radius: 12px;
+}
+
+.save-btn {
+  width: 100%;
+  padding: 18px;
+  background: var(--yellow);
+  border: none;
+  border-radius: 14px;
+  font-family: var(--font-display);
+  font-size: 26px;
+  cursor: pointer;
+}
