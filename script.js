@@ -63,3 +63,12 @@ function showToast(msg) {
 
 // เริ่มต้นโปรแกรม
 renderDashboard();
+function showToast() {
+  const toast = document.querySelector('.toast');
+  toast.classList.add('show');
+  
+  // ให้หายไปเองหลังจาก 3 วินาที
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3000);
+}
