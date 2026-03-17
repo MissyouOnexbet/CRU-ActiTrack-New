@@ -1,145 +1,174 @@
 :root {
-  --yellow: #FFD700;
-  --yellow-glow: rgba(255, 215, 0, 0.15);
-  --black: #0F0F0F;
-  --surface: #1A1A1A;
-  --surface-hover: #252525;
-  --border: rgba(255, 255, 255, 0.08);
-  --text: #FFFFFF;
-  --text-dim: #A0A0A0;
-  --success: #22C55E; /* สีเขียวสำหรับแจ้งเตือน */
-  --radius-lg: 24px;
-  --radius-md: 16px;
-  --font-display: 'Bebas Neue', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  --primary: #FEE715; /* สีเหลือง */
+  --primary-dark: #e5cd00;
+  --bg-app: #FFFFFF;
+  --bg-body: #F0F2F5;
+  --text-main: #1A1A1A;
+  --text-muted: #666666;
+  --box-bg: #EAEAEA;
+  --border-color: #DDDDDD;
 }
 
-/* ── โครงสร้างหลัก ── */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Prompt', sans-serif;
+}
+
 body {
-  background: var(--black);
-  color: var(--text);
-  font-family: var(--font-body);
+  background-color: var(--bg-body);
   display: flex;
   justify-content: center;
-  margin: 0;
+  color: var(--text-main);
+  min-height: 100vh;
 }
 
-.app-shell {
+.app-container {
   width: 100%;
-  max-width: 450px;
+  max-width: 400px;
+  background-color: var(--bg-app);
   min-height: 100vh;
-  background: var(--black);
+  position: relative;
+  box-shadow: 0 0 20px rgba(0,0,0,0.05);
+  overflow-x: hidden;
+}
+
+/* ================= SCREENS ================= */
+.screen {
+  display: none;
+  width: 100%;
+  height: 100%;
+  animation: fadeIn 0.3s;
+}
+.screen.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(10px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* ================= LOGIN ================= */
+.login-container {
+  padding: 40px 20px;
+  text-align: center;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.login-container h2 { margin-bottom: 5px; }
+.login-container p { color: var(--text-muted); margin-bottom: 30px; font-size: 14px; }
+
+.divider {
+  margin: 20px 0;
+  color: var(--text-muted);
+  font-size: 14px;
   position: relative;
 }
+.divider::before, .divider::after {
+  content: ""; position: absolute; top: 50%; width: 40%; height: 1px; background: #ddd;
+}
+.divider::before { left: 0; }
+.divider::after { right: 0; }
 
-/* ── แก้ไข TOAST (แถบแจ้งเตือน) ── */
-.toast {
-  position: fixed;
-  top: 30px; /* ย้ายมาไว้ด้านบนเพื่อไม่ให้บังปุ่ม */
-  left: 50%;
-  transform: translateX(-50%) translateY(-20px);
-  background: rgba(34, 197, 94, 0.9); /* เขียวโปร่งแสงนิดๆ */
-  backdrop-filter: blur(8px);
-  color: white;
-  padding: 12px 24px;
-  border-radius: 50px;
-  font-size: 14px;
-  font-weight: 600;
+/* ================= HEADER ================= */
+.header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-  z-index: 9999;
-  opacity: 0;
-  pointer-events: none;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-color);
+  justify-content: space-between;
 }
+.header-back { justify-content: flex-start; gap: 10px; cursor: pointer; }
+.back-btn { font-size: 14px; color: var(--text-muted); }
+.header-title { text-align: center; flex: 1; }
+.header-title h1 { font-size: 16px; margin: 0; }
+.header-title span { font-size: 12px; color: var(--text-muted); }
+.header-title-add { font-size: 16px; font-weight: 500; flex: 1; text-align: center; margin-right: 60px; }
+.user-icon { background: var(--box-bg); width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+.btn-logout { font-size: 12px; color: red; cursor: pointer; }
 
-/* เมื่อ Toast ทำงาน (ต้องมี class .show ใน HTML/JS) */
-.toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
+/* ================= TOTAL BOX ================= */
+.total-box {
+  background-color: var(--box-bg);
+  margin: 20px;
+  padding: 24px 20px;
+  border-radius: 16px;
+  text-align: center;
 }
+.total-label { font-size: 14px; color: var(--text-main); font-weight: 500; }
+.total-number { font-size: 48px; font-weight: 600; line-height: 1.2; margin: 5px 0; }
+.total-sub { font-size: 12px; color: var(--text-muted); }
 
-/* ── NAVIGATION ── */
-.tab-bar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: rgba(15, 15, 15, 0.85);
-  backdrop-filter: blur(15px);
-  display: flex;
-  padding: 12px;
-  gap: 8px;
-}
-
-.tab-btn {
-  flex: 1;
-  background: transparent;
-  border: none;
-  padding: 10px;
-  color: var(--text-dim);
-  font-weight: 600;
-  cursor: pointer;
+/* ================= LIST ================= */
+.list-section { padding: 0 20px; padding-bottom: 80px; }
+.list-title { font-size: 14px; font-weight: 500; margin-bottom: 12px; }
+.activity-list { display: flex; flex-direction: column; gap: 10px; }
+.card {
+  border: 1px solid var(--border-color);
   border-radius: 12px;
-  transition: 0.3s;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
+.card-left { display: flex; gap: 12px; align-items: center; }
+.card-icon { font-size: 20px; color: var(--text-muted); }
+.card-info h4 { font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+.card-info p { font-size: 11px; color: var(--text-muted); }
+.card-hours { font-size: 14px; font-weight: 600; }
 
-.tab-btn.active {
-  background: var(--surface);
-  color: var(--yellow);
-}
-
-/* ── DASHBOARD CARD ── */
-.summary-card {
-  background: linear-gradient(135deg, var(--yellow) 0%, #D4B500 100%);
-  border-radius: var(--radius-lg);
-  padding: 30px;
-  color: #000;
-  margin: 24px;
-  box-shadow: 0 15px 35px var(--yellow-glow);
-}
-
-.card-hours {
-  font-family: var(--font-display);
-  font-size: 72px;
-  line-height: 1;
-}
-
-/* ── INPUT FIELDS ── */
-.field-group { margin: 0 24px 20px; }
-
+/* ================= FORM & INPUTS ================= */
+.form-container { padding: 20px; }
+.input-group { margin-bottom: 16px; text-align: left; }
+.input-group label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; }
 input {
   width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px;
-  color: white;
-  font-size: 16px;
-}
-
-input:focus {
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
   outline: none;
-  border-color: var(--yellow);
-  box-shadow: 0 0 0 4px var(--yellow-glow);
 }
+input:focus { border-color: var(--text-muted); }
 
-/* ── BUTTON ── */
-.save-btn {
-  width: calc(100% - 48px);
-  margin: 20px 24px;
-  background: var(--yellow);
+/* ================= BUTTONS ================= */
+.btn {
+  width: 100%;
+  padding: 14px;
   border: none;
-  padding: 18px;
-  border-radius: 16px;
-  font-family: var(--font-display);
-  font-size: 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  transition: 0.2s;
+  transition: opacity 0.2s;
 }
+.btn:active { opacity: 0.8; }
+.btn-primary { background-color: var(--primary); color: var(--text-main); }
+.btn-google { background-color: white; border: 1px solid var(--border-color); color: var(--text-main); gap: 10px; }
+.btn-google img { width: 18px; height: 18px; }
+.btn-save { margin-top: 20px; }
 
-.save-btn:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.1);
+/* ================= FAB ================= */
+.fab {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--primary);
+  color: var(--text-main);
+  font-size: 28px;
+  border: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
 }
+.fab:active { transform: scale(0.95); }
