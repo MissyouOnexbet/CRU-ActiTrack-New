@@ -1,70 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>StudyTrack — Activity Tracker</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hours Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="app-shell">
-  <nav class="tab-bar" role="tablist">
-    <button class="tab-btn active" onclick="showScreen('dashboard', this)" role="tab" aria-selected="true">📊 Dashboard</button>
-    <button class="tab-btn" onclick="showScreen('log', this)" role="tab" aria-selected="false">➕ Log Activity</button>
-  </nav>
+<div class="app-container">
 
-  <div class="screen active" id="screen-dashboard">
-    <p class="greeting">Good day, student 👋</p>
-    <h1 class="screen-title">YOUR PROGRESS</h1>
-
-    <div class="summary-card">
-      <div class="card-label">Total Hours Logged</div>
-      <div class="card-hours" id="total-hours">0<span>hrs</span></div>
-      <div class="card-sub">
-        <div><b id="total-activities">0</b> activities</div>
-        <div>This week: <b id="week-hours">0</b> hrs</div>
+  <div id="screen-login" class="screen active">
+    <div class="login-container">
+      <h2>เข้าสู่ระบบ</h2>
+      <p>เพื่อบันทึกกิจกรรมของคุณ</p>
+      
+      <div class="input-group">
+        <label>อีเมล</label>
+        <input type="email" id="login-email" placeholder="example@email.com">
       </div>
-    </div>
-
-    <div class="section-header">
-      <span class="section-title">Recent Activities</span>
-      <span class="section-count" id="activity-count">0 entries</span>
-    </div>
-
-    <div class="activity-list" id="activity-list">
+      <div class="input-group">
+        <label>รหัสผ่าน</label>
+        <input type="password" id="login-pass" placeholder="••••••••">
       </div>
+      
+      <button class="btn btn-primary" onclick="handleLogin()">เข้าสู่ระบบ / สร้างบัญชี</button>
+      
+      <div class="divider">หรือ</div>
+      
+      <button class="btn btn-google" onclick="handleGoogleLogin()">
+        <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google Logo">
+        เข้าสู่ระบบด้วย Google
+      </button>
+    </div>
   </div>
 
-  <div class="screen" id="screen-log">
-    <h1 class="form-title">LOG ACTIVITY</h1>
-    <div class="field-group">
-      <label for="activity-name">Activity Name</label>
-      <input type="text" id="activity-name" placeholder="e.g. Math Study..." />
-      <p class="error-msg" id="name-err">Please enter an activity name.</p>
-    </div>
-
-    <div class="field-group">
-      <label for="activity-date">Date</label>
-      <input type="date" id="activity-date" />
-    </div>
-
-    <div class="field-group">
-      <label for="activity-hours-input">Hours Spent</label>
-      <input type="number" id="activity-hours-input" step="0.5" />
-      <div class="hours-hint">
-        <span class="hint-chip" onclick="setHours(0.5)">½ hr</span>
-        <span class="hint-chip" onclick="setHours(1)">1 hr</span>
-        <span class="hint-chip" onclick="setHours(2)">2 hrs</span>
+  <div id="screen-main" class="screen">
+    <header class="header">
+      <div class="user-icon">👤</div>
+      <div class="header-title">
+        <h1>Hours Tracker</h1>
+        <span>Total Hours</span>
       </div>
+      <div class="btn-logout" onclick="logout()">ออกระบบ</div>
+    </header>
+
+    <div class="total-box">
+      <div class="total-label">ชั่วโมงรวม</div>
+      <div class="total-number" id="display-total-hours">0</div>
+      <div class="total-sub">สะสมทั้งหมด</div>
     </div>
 
-    <button class="save-btn" id="save-btn" onclick="saveActivity(event)">SAVE ACTIVITY</button>
+    <div class="list-section">
+      <h3 class="list-title">รายการกิจกรรม</h3>
+      <div id="activity-list" class="activity-list">
+        </div>
+    </div>
+
+    <button class="fab" onclick="switchScreen('screen-add')">+</button>
   </div>
+
+  <div id="screen-add" class="screen">
+    <header class="header header-back" onclick="switchScreen('screen-main')">
+      <div class="back-btn">❮ ย้อนกลับ</div>
+      <div class="header-title-add">เพิ่มกิจกรรม</div>
+    </header>
+
+    <div class="form-container">
+      <div class="input-group">
+        <label>ชื่อกิจกรรม</label>
+        <input type="text" id="input-name" placeholder="ชื่อกิจกรรม...">
+      </div>
+      
+      <div class="input-group">
+        <label>วันที่และเวลา</label>
+        <input type="datetime-local" id="input-datetime">
+      </div>
+
+      <div class="input-group">
+        <label>จำนวนชั่วโมง</label>
+        <input type="number" id="input-hours" placeholder="0.0 ชม." step="0.5" min="0">
+      </div>
+
+      <button class="btn btn-primary btn-save" onclick="saveActivity()">บันทึก</button>
+    </div>
+  </div>
+
 </div>
 
-<div class="toast" id="toast">✅ Activity saved!</div>
-<script src="script.js"></script>
+<script type="module" src="script.js"></script>
 </body>
 </html>
