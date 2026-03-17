@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyTrack — Activity Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --yellow: #FFE000;
+      --yellow-dim: #E6C900;
+      --yellow-glow: rgba(255, 224, 0, 0.18);
+      --black: #0A0A0A;
+      --surface: #141414;
+      --surface2: #1E1E1E;
+      --border: rgba(255, 224, 0, 0.15);
+      --text: #F5F5F5;
+      --muted: #888;
+      --radius: 18px;
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--black);
+      color: var(--text);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 420px;
+      min-height: 100vh;
+      background: var(--black);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ── NAV TABS ── */
+    .tab-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(14px);
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      padding: 0 4px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: none;
+      border: none;
+      padding: 16px 0 14px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      cursor: pointer;
+      position: relative;
+      transition: color 0.25s;
+    }
+
+    .tab-btn::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 20%; right: 20%;
+      height: 2px;
+      background: var(--yellow);
+      border-radius: 2px 2px 0 0;
+      transform: scaleX(0);
+      transition: transform 0.25s cubic-bezier(.4,0,.2,1);
+    }
+
+    .tab-btn.active {
+      color: var(--yellow);
+    }
+    .tab-btn.active::after { transform: scaleX(1); }
+
+    /* ── SCREENS ── */
+    .screen { display: none; padding: 24px 20px 40px; animation: fadeUp 0.3s ease; }
+    .screen.active { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── SCREEN 1: DASHBOARD ── */
+    .greeting {
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .screen-title {
+      font-family: var(--font-display);
+      font-size: 38px;
+      line-height: 1;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      margin-bottom: 28px;
+    }
+
+    /* Summary Card */
+    .summary-card {
+      background: var(--yellow);
+      border-radius: var(--radius);
+      padding: 30px 28px 26px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+
+    .summary-card::before {
+      content: '';
+      position: absolute;
+      top: -30px; right: -30px;
+      width: 130px; height: 130px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.06);
+    }
+
+    .summary-card::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; right: 30px;
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.04);
+    }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(0,0,0,0.55);
+      margin-bottom: 10px;
+    }
+
+    .card-hours {
+      font-family: var(--font-display);
+      font-size: 80px;
+      line-height: 1;
+      color: var(--black);
+      letter-spacing: -0.01em;
+    }
+
+    .card-hours span {
+      font-family: var(--font-body);
+      font-size: 20px;
+      font-weight: 700;
+      vertical-align: middle;
+      margin-left: 4px;
+      color: rgba(0,0,0,0.6);
+    }
+
+    .card-sub {
+      margin-top: 14px;
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(0,0,0,0.55);
+      display: flex;
+      gap: 18px;
+    }
+
+    .card-sub b { color: var(--black); font-weight: 700; }
+
+    /* Section header */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .section-count {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--yellow);
+    }
+
+    /* Activity List */
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .activity-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      transition: transform 0.15s, border-color 0.15s;
+      cursor: default;
+    }
+
+    .activity-item:hover {
+      transform: translateX(4px);
+      border-color: rgba(255,224,0,0.35);
+    }
+
+    .activity-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: var(--yellow-glow);
+      border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .activity-info { flex: 1; min-width: 0; }
+
+    .activity-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .activity-date {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .activity-hours {
+      font-family: var(--font-display);
+      font-size: 28px;
+      color: var(--yellow);
+      letter-spacing: 0.03em;
+      flex-shrink: 0;
+    }
+
+    .activity-hours span {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      margin-left: 1px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+
+    .empty-state .empty-icon { font-size: 42px; margin-bottom: 14px; }
+    .empty-state p { font-size: 14px; line-height: 1.6; }
+
+    /* ── SCREEN 2: LOG ACTIVITY ── */
+    .form-title {
+      font-family: var(--font-display);
+      font-size: 38px;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    .form-subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    .field-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="number"] {
+      width: 100%;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 15px 18px;
+      font-family: var(--font-body);
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1) sepia(1) saturate(5) hue-rotate(0deg);
+      opacity: 0.5;
+      cursor: pointer;
+    }
+
+    input::placeholder { color: #444; }
+
+    input:focus {
+      border-color: var(--yellow);
+      box-shadow: 0 0 0 4px var(--yellow-glow);
+      background: var(--surface2);
+    }
+
+    input.error {
+      border-color: #ff4444;
+      box-shadow: 0 0 0 4px rgba(255,68,68,0.12);
+    }
+
+    .error-msg {
+      font-size: 12px;
+      color: #ff6b6b;
+      margin-top: 6px;
+      display: none;
+    }
+
+    .error-msg.visible { display: block; }
+
+    /* Hours hint */
+    .hours-hint {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .hint-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .hint-chip:hover, .hint-chip.selected {
+      background: var(--yellow);
+      border-color: var(--yellow);
+      color: var(--black);
+    }
+
+    .save-btn {
+      width: 100%;
+      margin-top: 32px;
+      padding: 18px;
+      background: var(--yellow);
+      border: none;
+      border-radius: 14px;
+      font-family: var(--font-display);
+      font-size: 26px;
+      letter-spacing: 0.1em;
+      color: var(--black);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 6px 28px rgba(255,224,0,0.22);
+    }
+
+    .save-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 36px rgba(255,224,0,0.35);
+    }
+
+    .save-btn:active {
+      transform: scale(0.98);
+    }
+
+    .save-btn .btn-ripple {
+      position: absolute;
+      width: 0; height: 0;
+      border-radius: 50%;
+      background: rgba(0,0,0,0.12);
+      transform: translate(-50%,-50%);
+      transition: width 0.5s, height 0.5s, opacity 0.4s;
+      opacity: 1;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%; transform: translateX(-50%) translateY(80px);
+      background: var(--surface2);
+      border: 1px solid var(--yellow);
+      border-radius: 30px;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--yellow);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 999;
+      transition: transform 0.35s cubic-bezier(.34,1.56,.64,1), opacity 0.35s;
+      opacity: 0;
+      white-space: nowrap;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- TAB BAR -->
+  <nav class="tab-bar" role="tablist">
+    <button class="tab-btn active" onclick="showScreen('dashboard', this)" role="tab" aria-selected="true">📊 Dashboard</button>
+    <button class="tab-btn" onclick="showScreen('log', this)" role="tab" aria-selected="false">➕ Log Activity</button>
+  </nav>
+
+  <!-- ── SCREEN 1: DASHBOARD ── -->
+  <div class="screen active" id="screen-dashboard">
+    <p class="greeting">Good day, student 👋</p>
+    <h1 class="screen-title">YOUR PROGRESS</h1>
+
+    <!-- Summary Card -->
+    <div class="summary-card">
+      <div class="card-label">Total Hours Logged</div>
+      <div class="card-hours" id="total-hours">0<span>hrs</span></div>
+      <div class="card-sub">
+        <div><b id="total-activities">0</b> activities</div>
+        <div>This week: <b id="week-hours">0</b> hrs</div>
+      </div>
+    </div>
+
+    <!-- Past Activities -->
+    <div class="section-header">
+      <span class="section-title">Recent Activities</span>
+      <span class="section-count" id="activity-count">0 entries</span>
+    </div>
+
+    <div class="activity-list" id="activity-list">
+      <div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <p>No activities yet.<br/>Log your first one to get started!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SCREEN 2: LOG ACTIVITY ── -->
+  <div class="screen" id="screen-log">
+    <h1 class="form-title">LOG ACTIVITY</h1>
+    <p class="form-subtitle">Track what you worked on today.</p>
+
+    <div class="field-group">
+      <label for="activity-name">Activity Name</label>
+      <input type="text" id="activity-name" placeholder="e.g. Math Study, Coding, Reading…" maxlength="60" />
+      <p class="error-msg" id="name-err">Please enter an activity name.</p>
+    </div>
+
+    <div class="field-group">
+      <label for="activity-date">Date</label>
+      <input type="date" id="activity-date" />
+      <p class="error-msg" id="date-err">Please pick a date.</p>
+    </div>
+
+    <div class="field-group">
+      <label for="activity-hours-input">Hours Spent</label>
+      <input type="number" id="activity-hours-input" placeholder="0.5" min="0.5" max="24" step="0.5" />
+      <p class="error-msg" id="hours-err">Please enter a valid number of hours (0.5 – 24).</p>
+      <div class="hours-hint">
+        <span class="hint-chip" onclick="setHours(0.5)">½ hr</span>
+        <span class="hint-chip" onclick="setHours(1)">1 hr</span>
+        <span class="hint-chip" onclick="setHours(2)">2 hrs</span>
+        <span class="hint-chip" onclick="setHours(3)">3 hrs</span>
+        <span class="hint-chip" onclick="setHours(4)">4 hrs</span>
+      </div>
+    </div>
+
+    <button class="save-btn" id="save-btn" onclick="saveActivity(event)">SAVE ACTIVITY</button>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast">✅ Activity saved!</div>
+
+<script>
+  // ── DATA ──────────────────────────────────────────────────────────────
+  const EMOJIS = ['📚', '💻', '🔬', '✏️', '🎨', '🏃', '🎵', '📝', '🧮', '🌍'];
+
+  let activities = JSON.parse(localStorage.getItem('studytrack') || '[]');
+
+  // Set today's date as default
+  const todayISO = new Date().toISOString().split('T')[0];
+  document.getElementById('activity-date').value = todayISO;
+
+  // ── TABS ──────────────────────────────────────────────────────────────
+  function showScreen(id, btn) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      b.classList.remove('active');
+      b.setAttribute('aria-selected', 'false');
+    });
+    document.getElementById('screen-' + id).classList.add('active');
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+    if (id === 'dashboard') renderDashboard();
+  }
+
+  // ── DASHBOARD ─────────────────────────────────────────────────────────
+  function renderDashboard() {
+    const list = document.getElementById('activity-list');
+    const total = activities.reduce((s, a) => s + a.hours, 0);
+    const count = activities.length;
+
+    // Week hours
+    const now = new Date();
+    const monday = new Date(now);
+    monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+    monday.setHours(0,0,0,0);
+    const weekHrs = activities
+      .filter(a => new Date(a.date) >= monday)
+      .reduce((s, a) => s + a.hours, 0);
+
+    document.getElementById('total-hours').innerHTML = total % 1 === 0
+      ? `${total}<span>hrs</span>` : `${total}<span>hrs</span>`;
+    document.getElementById('total-activities').textContent = count;
+    document.getElementById('week-hours').textContent = weekHrs % 1 === 0 ? weekHrs : weekHrs.toFixed(1);
+    document.getElementById('activity-count').textContent = count + (count === 1 ? ' entry' : ' entries');
+
+    if (count === 0) {
+      list.innerHTML = `<div class="empty-state">
+        <div class="empty-icon">📭</div>
+        <p>No activities yet.<br/>Log your first one to get started!</p>
+      </div>`;
+      return;
+    }
+
+    const sorted = [...activities].sort((a, b) => new Date(b.date) - new Date(a.date));
+    list.innerHTML = sorted.map((a, i) => {
+      const d = new Date(a.date + 'T00:00:00');
+      const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const emoji = EMOJIS[i % EMOJIS.length];
+      const hrs = a.hours % 1 === 0 ? a.hours : a.hours.toFixed(1);
+      return `
+        <div class="activity-item" style="animation-delay:${i * 0.05}s">
+          <div class="activity-icon">${emoji}</div>
+          <div class="activity-info">
+            <div class="activity-name">${escHtml(a.name)}</div>
+            <div class="activity-date">${dateStr}</div>
+          </div>
+          <div class="activity-hours">${hrs}<span>hr</span></div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── SAVE ACTIVITY ─────────────────────────────────────────────────────
+  function saveActivity(e) {
+    const nameEl  = document.getElementById('activity-name');
+    const dateEl  = document.getElementById('activity-date');
+    const hoursEl = document.getElementById('activity-hours-input');
+
+    let valid = true;
+
+    const clearErr = (id) => document.getElementById(id).classList.remove('visible');
+    const showErr  = (id, inputEl) => {
+      document.getElementById(id).classList.add('visible');
+      inputEl.classList.add('error');
+      valid = false;
+    };
+
+    [nameEl, dateEl, hoursEl].forEach(el => el.classList.remove('error'));
+    ['name-err', 'date-err', 'hours-err'].forEach(clearErr);
+
+    const name  = nameEl.value.trim();
+    const date  = dateEl.value;
+    const hours = parseFloat(hoursEl.value);
+
+    if (!name)                         showErr('name-err', nameEl);
+    if (!date)                         showErr('date-err', dateEl);
+    if (isNaN(hours) || hours < 0.5 || hours > 24) showErr('hours-err', hoursEl);
+
+    if (!valid) return;
+
+    // Ripple
+    const btn = document.getElementById('save-btn');
+    const ripple = document.createElement('span');
+    ripple.className = 'btn-ripple';
+    const rect = btn.getBoundingClientRect();
+    ripple.style.left = (e.clientX - rect.left) + 'px';
+    ripple.style.top  = (e.clientY - rect.top) + 'px';
+    btn.appendChild(ripple);
+    requestAnimationFrame(() => { ripple.style.width = '300px'; ripple.style.height = '300px'; ripple.style.opacity = '0'; });
+    setTimeout(() => ripple.remove(), 600);
+
+    activities.push({ name, date, hours });
+    localStorage.setItem('studytrack', JSON.stringify(activities));
+
+    // Reset form
+    nameEl.value = '';
+    dateEl.value = todayISO;
+    hoursEl.value = '';
+    document.querySelectorAll('.hint-chip').forEach(c => c.classList.remove('selected'));
+
+    showToast('✅ Activity saved!');
+  }
+
+  function setHours(val) {
+    document.getElementById('activity-hours-input').value = val;
+    document.getElementById('activity-hours-input').classList.remove('error');
+    document.getElementById('hours-err').classList.remove('visible');
+    document.querySelectorAll('.hint-chip').forEach(c => c.classList.remove('selected'));
+    event.target.classList.add('selected');
+  }
+
+  // ── TOAST ────────────────────────────────────────────────────────────
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  // ── UTILS ────────────────────────────────────────────────────────────
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // Init
+  renderDashboard();
+</script>
+</body>
+</html>
