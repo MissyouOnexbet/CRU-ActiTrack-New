@@ -1,91 +1,207 @@
 :root {
-  --yellow: #FFE000;
-  --yellow-dim: #E6C900;
-  --yellow-glow: rgba(255, 224, 0, 0.18);
-  --black: #0A0A0A;
-  --surface: #141414;
-  --surface2: #1E1E1E;
-  --border: rgba(255, 224, 0, 0.15);
-  --text: #F5F5F5;
-  --muted: #888;
-  --radius: 18px;
+  --yellow: #FFD700;
+  --yellow-light: #FFE44D;
+  --yellow-glow: rgba(255, 215, 0, 0.15);
+  --black: #0F0F0F; 
+  --surface: #1A1A1A;
+  --surface-hover: #252525;
+  --border: rgba(255, 255, 255, 0.08);
+  --text: #FFFFFF;
+  --text-dim: #A0A0A0;
+  --radius-lg: 24px;
+  --radius-md: 16px;
   --font-display: 'Bebas Neue', sans-serif;
-  --font-body: 'DM Sans', sans-serif;
+  --font-body: 'Inter', 'DM Sans', sans-serif; 
+}
+
+*, *::before, *::after { 
+  box-sizing: border-box; 
+  margin: 0; padding: 0; 
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
   background: var(--black);
   color: var(--text);
   font-family: var(--font-body);
+  line-height: 1.5;
   display: flex;
   justify-content: center;
 }
 
 .app-shell {
   width: 100%;
-  max-width: 420px;
+  max-width: 450px;
   min-height: 100vh;
   background: var(--black);
+  padding-bottom: 40px;
 }
 
+/* ── NAVIGATION ── */
 .tab-bar {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(10,10,10,0.92);
-  backdrop-filter: blur(14px);
+  background: rgba(15, 15, 15, 0.8);
+  backdrop-filter: blur(20px);
   display: flex;
-  border-bottom: 1px solid var(--border);
+  padding: 10px 16px;
+  gap: 12px;
 }
 
 .tab-btn {
   flex: 1;
-  background: none;
+  background: transparent;
   border: none;
-  padding: 16px 0;
-  color: var(--muted);
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dim);
   cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .tab-btn.active {
+  background: var(--surface);
   color: var(--yellow);
-  border-bottom: 2px solid var(--yellow);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* ── DASHBOARD ── */
+.screen { padding: 32px 24px; }
+
+.screen-title {
+  font-family: var(--font-display);
+  font-size: 42px;
+  letter-spacing: 0.02em;
+  margin-bottom: 24px;
+  background: linear-gradient(to bottom, #fff 60%, #888);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .summary-card {
-  background: var(--yellow);
-  border-radius: var(--radius);
-  padding: 30px;
-  color: var(--black);
+  background: linear-gradient(135deg, var(--yellow) 0%, #E6C200 100%);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  color: #000;
+  box-shadow: 0 20px 40px rgba(255, 215, 0, 0.15);
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
 }
 
+/* เพิ่มลวดลายวงกลมให้ดู Modern */
+.summary-card::before {
+  content: '';
+  position: absolute;
+  width: 150px; height: 150px;
+  background: white;
+  opacity: 0.1;
+  border-radius: 50%;
+  top: -50px; right: -50px;
+}
+
+.card-hours {
+  font-family: var(--font-display);
+  font-size: 84px;
+  line-height: 0.9;
+  margin: 10px 0;
+}
+
+.card-label {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+}
+
+/* ── ACTIVITY LIST ── */
 .activity-item {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px;
-  margin-bottom: 10px;
+  border-radius: var(--radius-md);
+  padding: 18px;
+  margin-bottom: 12px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  transition: all 0.2s ease;
+}
+
+.activity-item:hover {
+  transform: translateY(-2px);
+  background: var(--surface-hover);
+  border-color: rgba(255, 215, 0, 0.3);
+}
+
+.activity-icon {
+  width: 48px; height: 48px;
+  background: var(--black);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  border: 1px solid var(--border);
+}
+
+.activity-name { font-weight: 600; font-size: 16px; margin-bottom: 2px; }
+.activity-date { font-size: 13px; color: var(--text-dim); }
+.activity-hours { color: var(--yellow); font-family: var(--font-display); font-size: 24px; }
+
+/* ── FORM ELEMENTS ── */
+.field-group { margin-bottom: 24px; }
+
+label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+  display: block;
+  padding-left: 4px;
 }
 
 input {
   width: 100%;
   background: var(--surface);
-  border: 1.5px solid var(--border);
-  padding: 15px;
-  color: white;
-  border-radius: 12px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  color: #fff;
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--yellow);
+  background: #222;
+  box-shadow: 0 0 0 4px var(--yellow-glow);
 }
 
 .save-btn {
   width: 100%;
-  padding: 18px;
   background: var(--yellow);
+  color: #000;
   border: none;
-  border-radius: 14px;
+  padding: 20px;
+  border-radius: 16px;
   font-family: var(--font-display);
-  font-size: 26px;
+  font-size: 28px;
   cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+  margin-top: 20px;
 }
+
+.save-btn:hover {
+  transform: translateY(-4px) scale(1.02);
+  background: var(--yellow-light);
+  box-shadow: 0 15px 30px rgba(255, 215, 0, 0.25);
+}
+
+.save-btn:active { transform: translateY(0) scale(0.98); }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-thumb { background: var(--surface-hover); border-radius: 10px; }
